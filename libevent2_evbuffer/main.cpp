@@ -77,7 +77,7 @@ int
 main(int argc, char **argv)
 {
 	struct event_base *base;
-// 	struct evconnlistener *listener;
+ 	struct evconnlistener *listener;
 	struct sockaddr_in sin;
 #ifdef WIN32
 	WSADATA wsa_data;
@@ -87,11 +87,10 @@ main(int argc, char **argv)
 	struct event *signal_event;
 	base = event_base_new();
 
-	evutil_socket_t listener;
-	listener = socket(AF_INET, SOCK_STREAM, 0);
-	evutil_make_listen_socket_reuseable(listener);
+	//evutil_socket_t listener;
+	//listener = socket(AF_INET, SOCK_STREAM, 0);
+	//evutil_make_listen_socket_reuseable(listener);
 
-	
 	if (!base) {
 		fprintf(stderr, "Could not initialize libevent!\n");
 		return 1;
@@ -101,31 +100,32 @@ main(int argc, char **argv)
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(PORT);
 
-	if (bind(listener, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
-		perror("bind");
-		return 1;
-	}
-
-	if (listen(listener, 5) < 0) {
-		perror("listen");
-		return 1;
-	}
-
-	printf ("Listening...\n");
-
-	evutil_make_socket_nonblocking(listener);
-	struct event *listen_event;
-	listen_event = event_new(base, listener, EV_READ|EV_PERSIST, do_accept, (void*)base);
-	event_add(listen_event, NULL);
-// 	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
-// 	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
-// 	    (struct sockaddr*)&sin,
-// 	    sizeof(sin));
-// 
-// 	if (!listener) {
-// 		fprintf(stderr, "Could not create a listener!\n");
+// 	if (bind(listener, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+// 		perror("bind");
 // 		return 1;
 // 	}
+// 
+// 	if (listen(listener, 5) < 0) {
+// 		perror("listen");
+// 		return 1;
+// 	}
+// 
+// 	printf ("Listening...\n");
+// 
+// 	evutil_make_socket_nonblocking(listener);
+// 	struct event *listen_event;
+// 	listen_event = event_new(base, listener, EV_READ|EV_PERSIST, do_accept, (void*)base);
+// 	event_add(listen_event, NULL);
+
+ 	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
+ 	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
+ 	    (struct sockaddr*)&sin,
+ 	    sizeof(sin));
+ 
+ 	if (!listener) {
+ 		fprintf(stderr, "Could not create a listener!\n");
+ 		return 1;
+ 	}
 
 	signal_event = evsignal_new(base, SIGINT, signal_cb, (void *)base);
 
@@ -199,6 +199,9 @@ conn_eventcb(struct bufferevent *bev, short events, void *user_data)
 	}else if(events & BEV_EVENT_CONNECTED)
 	{
 		printf("connected \n");
+	}else if(events & BEV_EVENT_ERROR)
+	{
+		printf("BEV_EVENT_ERROR \n");
 	}
 	bufferevent_free(bev);
 }
