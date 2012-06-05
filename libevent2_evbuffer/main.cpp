@@ -57,7 +57,7 @@ void do_accept(evutil_socket_t listener, short event, void *arg)
 		return;
 	}
 
-	printf("%s\n", inet_ntoa(sin.sin_addr));
+	printf("%s:%d\n", inet_ntoa(sin.sin_addr), sin.sin_port);
 	printf("ACCEPT: fd = %u\n", fd);
 
 	struct bufferevent* bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
@@ -87,45 +87,45 @@ main(int argc, char **argv)
 	struct event *signal_event;
 	base = event_base_new();
 
-	//evutil_socket_t listener;
-	//listener = socket(AF_INET, SOCK_STREAM, 0);
-	//evutil_make_listen_socket_reuseable(listener);
-
-	if (!base) {
-		fprintf(stderr, "Could not initialize libevent!\n");
-		return 1;
-	}
+// 	evutil_socket_t listener;
+// 	listener = socket(AF_INET, SOCK_STREAM, 0);
+// 	evutil_make_listen_socket_reuseable(listener);
+// 
+// 	if (!base) {
+// 		fprintf(stderr, "Could not initialize libevent!\n");
+// 		return 1;
+// 	}
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(PORT);
 
-// 	if (bind(listener, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
-// 		perror("bind");
-// 		return 1;
-// 	}
-// 
-// 	if (listen(listener, 5) < 0) {
-// 		perror("listen");
-// 		return 1;
-// 	}
-// 
-// 	printf ("Listening...\n");
-// 
-// 	evutil_make_socket_nonblocking(listener);
-// 	struct event *listen_event;
-// 	listen_event = event_new(base, listener, EV_READ|EV_PERSIST, do_accept, (void*)base);
-// 	event_add(listen_event, NULL);
-
- 	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
- 	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
- 	    (struct sockaddr*)&sin,
- 	    sizeof(sin));
+//  	if (bind(listener, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+//  		perror("bind");
+//  		return 1;
+//  	}
+//  
+//  	if (listen(listener, 5) < 0) {
+//  		perror("listen");
+//  		return 1;
+//  	}
+//  
+//  	printf ("Listening...\n");
  
- 	if (!listener) {
- 		fprintf(stderr, "Could not create a listener!\n");
- 		return 1;
- 	}
+//  	evutil_make_socket_nonblocking(listener);
+//  	struct event *listen_event;
+//  	listen_event = event_new(base, listener, EV_READ|EV_PERSIST, do_accept, (void*)base);
+//  	event_add(listen_event, NULL);
+
+  	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
+  	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
+  	    (struct sockaddr*)&sin,
+  	    sizeof(sin));
+  
+  	if (!listener) {
+  		fprintf(stderr, "Could not create a listener!\n");
+  		return 1;
+  	}
 
 	signal_event = evsignal_new(base, SIGINT, signal_cb, (void *)base);
 
@@ -151,12 +151,18 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 	struct event_base *base = (event_base *)user_data;
 	struct bufferevent *bev;
 
+	printf("%s\n", sa->sa_data);
+	printf("ACCEPT: fd = %u\n", fd);
+
 	bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
 	if (!bev) {
 		fprintf(stderr, "Error constructing bufferevent!");
 		event_base_loopbreak(base);
 		return;
 	}
+
+	evutil_socket_t Clientfd = bufferevent_getfd(bev);
+	printf("client socket coming %d\n", Clientfd);
 	bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, NULL);
 	bufferevent_enable(bev, EV_WRITE);
 	bufferevent_enable(bev, EV_READ);
