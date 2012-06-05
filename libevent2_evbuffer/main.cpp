@@ -30,31 +30,68 @@
 #include <event2/listener.h>
 #include <event2/util.h>
 #include <event2/event.h>
+#include <assert.h>
 
 static const char MESSAGE[] = "Hello, World!\n";
 
-static const int PORT = 5555;
+static const int PORT = 3000;
 
 static void listener_cb(struct evconnlistener *, evutil_socket_t,
     struct sockaddr *, int socklen, void *);
+static void conn_readcb(struct bufferevent *, void *);
 static void conn_writecb(struct bufferevent *, void *);
 static void conn_eventcb(struct bufferevent *, short, void *);
 static void signal_cb(evutil_socket_t, short, void *);
+
+
+void do_accept(evutil_socket_t listener, short event, void *arg)
+{
+	struct event_base *base = (struct event_base *)arg;
+	evutil_socket_t fd;
+	struct sockaddr_in sin;
+	int slen = sizeof(sin);
+	fd = accept(listener, (struct sockaddr *)&sin, &slen);
+	if (fd < 0) {
+		perror("accept");
+		int nLast = WSAGetLastError();
+		return;
+	}
+
+	printf("%s\n", inet_ntoa(sin.sin_addr));
+	printf("ACCEPT: fd = %u\n", fd);
+
+	struct bufferevent* bev = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
+	if (!bev) {
+		fprintf(stderr, "Error constructing bufferevent!");
+		event_base_loopbreak(base);
+		return;
+	}
+	bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, NULL);
+	bufferevent_enable(bev, EV_WRITE);
+	bufferevent_enable(bev, EV_READ);
+
+	bufferevent_write(bev, MESSAGE, strlen(MESSAGE));
+}
 
 int
 main(int argc, char **argv)
 {
 	struct event_base *base;
-	struct evconnlistener *listener;
-	struct event *signal_event;
-
+// 	struct evconnlistener *listener;
 	struct sockaddr_in sin;
 #ifdef WIN32
 	WSADATA wsa_data;
 	WSAStartup(0x0201, &wsa_data);
 #endif
 
+	struct event *signal_event;
 	base = event_base_new();
+
+	evutil_socket_t listener;
+	listener = socket(AF_INET, SOCK_STREAM, 0);
+	evutil_make_listen_socket_reuseable(listener);
+
+	
 	if (!base) {
 		fprintf(stderr, "Could not initialize libevent!\n");
 		return 1;
@@ -64,15 +101,31 @@ main(int argc, char **argv)
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(PORT);
 
-	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
-	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
-	    (struct sockaddr*)&sin,
-	    sizeof(sin));
-
-	if (!listener) {
-		fprintf(stderr, "Could not create a listener!\n");
+	if (bind(listener, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+		perror("bind");
 		return 1;
 	}
+
+	if (listen(listener, 5) < 0) {
+		perror("listen");
+		return 1;
+	}
+
+	printf ("Listening...\n");
+
+	evutil_make_socket_nonblocking(listener);
+	struct event *listen_event;
+	listen_event = event_new(base, listener, EV_READ|EV_PERSIST, do_accept, (void*)base);
+	event_add(listen_event, NULL);
+// 	listener = evconnlistener_new_bind(base, listener_cb, (void *)base,
+// 	    LEV_OPT_REUSEABLE|LEV_OPT_CLOSE_ON_FREE, -1,
+// 	    (struct sockaddr*)&sin,
+// 	    sizeof(sin));
+// 
+// 	if (!listener) {
+// 		fprintf(stderr, "Could not create a listener!\n");
+// 		return 1;
+// 	}
 
 	signal_event = evsignal_new(base, SIGINT, signal_cb, (void *)base);
 
@@ -83,7 +136,7 @@ main(int argc, char **argv)
 
 	event_base_dispatch(base);
 
-	evconnlistener_free(listener);
+	//evconnlistener_free(listener);
 	event_free(signal_event);
 	event_base_free(base);
 
@@ -104,11 +157,25 @@ listener_cb(struct evconnlistener *listener, evutil_socket_t fd,
 		event_base_loopbreak(base);
 		return;
 	}
-	bufferevent_setcb(bev, NULL, conn_writecb, conn_eventcb, NULL);
+	bufferevent_setcb(bev, conn_readcb, conn_writecb, conn_eventcb, NULL);
 	bufferevent_enable(bev, EV_WRITE);
-	bufferevent_disable(bev, EV_READ);
+	bufferevent_enable(bev, EV_READ);
 
 	bufferevent_write(bev, MESSAGE, strlen(MESSAGE));
+}
+
+static void conn_readcb(struct bufferevent* bev, void * user_data)
+{
+	#define MAX_LINE    256
+	char line[MAX_LINE+1];
+	int n;
+	evutil_socket_t fd = bufferevent_getfd(bev);
+	while (n = bufferevent_read(bev, line, MAX_LINE), n > 0) 
+	{
+		line[n] = '\0';
+		printf("fd=%u, read line: %s\n", fd, line);
+		bufferevent_write(bev, line, n);
+	}
 }
 
 static void
@@ -128,10 +195,11 @@ conn_eventcb(struct bufferevent *bev, short events, void *user_data)
 		printf("Connection closed.\n");
 	} else if (events & BEV_EVENT_ERROR) {
 		printf("Got an error on the connection: %s\n",
-		    strerror(errno));/*XXX win32*/
+		    strerror(errno));
+	}else if(events & BEV_EVENT_CONNECTED)
+	{
+		printf("connected \n");
 	}
-	/* None of the other events can happen here, since we haven't enabled
-	 * timeouts */
 	bufferevent_free(bev);
 }
 
