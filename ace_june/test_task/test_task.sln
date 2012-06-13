@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_task", "test_task\test_task.vcproj", "{76AA3854-862C-49E7-8B73-EFA4860F77ED}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "threadpool", "..\threadpool\threadpool.vcproj", "{F6B10A14-F9E5-406B-AC95-EFF09A6C153E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_water_mark", "..\test_water_mark\test_water_mark.vcproj", "{6A87C6AF-BF4E-40FE-BFCE-239C8B8171E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{76AA3854-862C-49E7-8B73-EFA4860F77ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{76AA3854-862C-49E7-8B73-EFA4860F77ED}.Debug|Win32.Build.0 = Debug|Win32
+		{76AA3854-862C-49E7-8B73-EFA4860F77ED}.Release|Win32.ActiveCfg = Release|Win32
+		{76AA3854-862C-49E7-8B73-EFA4860F77ED}.Release|Win32.Build.0 = Release|Win32
+		{F6B10A14-F9E5-406B-AC95-EFF09A6C153E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F6B10A14-F9E5-406B-AC95-EFF09A6C153E}.Debug|Win32.Build.0 = Debug|Win32
+		{F6B10A14-F9E5-406B-AC95-EFF09A6C153E}.Release|Win32.ActiveCfg = Release|Win32
+		{F6B10A14-F9E5-406B-AC95-EFF09A6C153E}.Release|Win32.Build.0 = Release|Win32
+		{6A87C6AF-BF4E-40FE-BFCE-239C8B8171E7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A87C6AF-BF4E-40FE-BFCE-239C8B8171E7}.Debug|Win32.Build.0 = Debug|Win32
+		{6A87C6AF-BF4E-40FE-BFCE-239C8B8171E7}.Release|Win32.ActiveCfg = Release|Win32
+		{6A87C6AF-BF4E-40FE-BFCE-239C8B8171E7}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
