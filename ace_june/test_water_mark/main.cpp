@@ -26,7 +26,7 @@ static void* produce(void *arg)
 	{
 		ACE_OS::sleep(2);
 
-		ACE_DEBUG((LM_DEBUG, "(%P : %t) producer.../n"));
+		ACE_DEBUG((LM_DEBUG, "(%P : %t) producer...\n"));
 
 		while(true)
 		{
@@ -42,13 +42,13 @@ static void* produce(void *arg)
 				mq->enqueue_prio (mb2);
 				mq->enqueue_prio (mb3);
 
-				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer will pending!!/n"));
+				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer will pending!!\n"));
 
 				//因为消费者在睡眠6秒之后才会调用deactivate，因此生产者会在这儿阻塞几秒钟
 				//可以不断地将msg_bytes打印出来观察观察
 				int ret = mq->enqueue_prio (mb4);
 
-				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by  deactivate, ret = %d!!/n", ret));
+				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by  deactivate, ret = %d!!\n", ret));
 
 				++loop;
 			}
@@ -63,11 +63,11 @@ static void* produce(void *arg)
 				//生产者在此处等待被消费者唤醒
 				mq->low_water_mark(5);
 
-				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer will pending again!!/n"));
+				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer will pending again!!\n"));
 
 				mq->enqueue_prio (mb4);
 
-				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by consumer!!/n"));
+				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by consumer!!\n"));
 
 				++loop;
 			}
@@ -86,7 +86,7 @@ void* consume(void *arg)
 	{
 		ACE_OS::sleep(2);
 
-		ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer.../n"));
+		ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer...\n"));
 
 		if(loop == 1)
 		{
@@ -121,7 +121,7 @@ void* consume(void *arg)
 			mq->dequeue_head (mb);
 			mq->dequeue_head (mb);
 
-			ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer wake up producer!!/n"));
+			ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer wake up producer!!\n"));
 
 			++loop;
 		}
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 
 	//输出静态消息队列的相关信息
 	//高低水位默认值均为16384
-	ACE_DEBUG((LM_DEBUG, "count : %d, bytes : %d, length : %d, high_water_mark : %d, low_water_mark : %d, status : %d/n",
+	ACE_DEBUG((LM_DEBUG, "count : %d, bytes : %d, length : %d, high_water_mark : %d, low_water_mark : %d, status : %d\n",
 		mq->message_count(), mq->message_bytes(), mq->message_length(),
 		mq->high_water_mark(), mq->low_water_mark(),
 		mq->state()));
@@ -172,37 +172,37 @@ int main(int argc, char* argv[])
 	ACE_Message_Block *mb;
 
 	//使用next遍历消息，遍历的顺序为高优先级到底优先级
-	ACE_DEBUG((LM_DEBUG, "===========next=============/n"));
+	ACE_DEBUG((LM_DEBUG, "===========next=============\n"));
 	//peek一下，并不弹出消息，类似Windows的PeekMessage
 	mq->peek_dequeue_head(mb);
 	do 
 	{
-		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d/n", mb->rd_ptr(), mb->msg_priority()));
+		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d\n", mb->rd_ptr(), mb->msg_priority()));
 	}while(mb = mb->next());
 
 	//使用迭代器遍历消息队列，遍历的顺序为高优先级到底优先级
-	ACE_DEBUG((LM_DEBUG, "=========iterator=============/n"));
+	ACE_DEBUG((LM_DEBUG, "=========iterator=============\n"));
 	ACE_Message_Queue<ACE_MT_SYNCH>::ITERATOR iterator (*mq);
 
 	for (ACE_Message_Block *entry = 0;
 		iterator.next (entry) != 0;
 		iterator.advance ())
 	{
-		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d/n", entry->rd_ptr(), entry->msg_priority()));
+		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d\n", entry->rd_ptr(), entry->msg_priority()));
 	}
 
 
-	ACE_DEBUG((LM_DEBUG, "============dequeue_head==========/n"));
+	ACE_DEBUG((LM_DEBUG, "============dequeue_head==========\n"));
 	while(mq->dequeue_head (mb) != -1)
 	{
-		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d/n", mb->rd_ptr(), mb->msg_priority()));
+		ACE_DEBUG((LM_DEBUG, "message: %s, priority: %d\n", mb->rd_ptr(), mb->msg_priority()));
 
 		//这里如果不判断的话，消息队列空时会导致主线程被阻塞
 		if(mq->is_empty())
 			break;
 	}
 
-	ACE_DEBUG((LM_DEBUG, "/n/n"));
+	ACE_DEBUG((LM_DEBUG, "\n\n"));
 
 	//////////////////////////////////测试高低水位和队列的state使用，进行测试之前mq队列已空///////////////////////////
 	//产生一个生产者线程
