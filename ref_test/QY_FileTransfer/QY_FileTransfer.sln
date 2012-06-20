@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QY_FileClient", "QY_FileClient\QY_FileClient.vcproj", "{33060F9E-A404-4430-A7EB-305976C82ADB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QY_FileServer", "QY_FileServer\QY_FileServer.vcproj", "{420B5FB9-75C8-4145-9BD4-8A624F344C2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33060F9E-A404-4430-A7EB-305976C82ADB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{33060F9E-A404-4430-A7EB-305976C82ADB}.Debug|Win32.Build.0 = Debug|Win32
+		{33060F9E-A404-4430-A7EB-305976C82ADB}.Release|Win32.ActiveCfg = Release|Win32
+		{33060F9E-A404-4430-A7EB-305976C82ADB}.Release|Win32.Build.0 = Release|Win32
+		{420B5FB9-75C8-4145-9BD4-8A624F344C2B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{420B5FB9-75C8-4145-9BD4-8A624F344C2B}.Debug|Win32.Build.0 = Debug|Win32
+		{420B5FB9-75C8-4145-9BD4-8A624F344C2B}.Release|Win32.ActiveCfg = Release|Win32
+		{420B5FB9-75C8-4145-9BD4-8A624F344C2B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
