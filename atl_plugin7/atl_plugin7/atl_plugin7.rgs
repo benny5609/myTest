@@ -1,0 +1,22 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'atl_plugin7'
+		'atl_plugin7.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {2C40B32C-0ECB-4E0A-B421-656AD94F0AF9} = s 'CompReg Class'
+		{
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{AC5F8DCB-3C0E-4FA4-A9B8-17F69983B38C}'
+		}
+	}
+}

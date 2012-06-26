@@ -1,0 +1,10 @@
+; atl_plugin7.def : 定义模块参数。
+
+LIBRARY      "atl_plugin7.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE
+	DllInstall		PRIVATE

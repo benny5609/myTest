@@ -1,0 +1,34 @@
+HKCR
+{
+	atl_plugin7.bennyTest.1 = s 'bennyTest Class'
+	{
+		CLSID = s '{1A9E3248-67D3-42F3-887B-A2FA153FEA84}'
+	}
+	atl_plugin7.bennyTest = s 'bennyTest Class'
+	{
+		CLSID = s '{1A9E3248-67D3-42F3-887B-A2FA153FEA84}'
+		CurVer = s 'atl_plugin7.bennyTest.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {1A9E3248-67D3-42F3-887B-A2FA153FEA84} = s 'bennyTest Class'
+		{
+			ProgID = s 'atl_plugin7.bennyTest.1'
+			VersionIndependentProgID = s 'atl_plugin7.bennyTest'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 103'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{AC5F8DCB-3C0E-4FA4-A9B8-17F69983B38C}'
+			'Version' = s '1.0'
+		}
+	}
+}

@@ -65,9 +65,9 @@ static void* produce(void *arg)
 
 				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer will pending again!!\n"));
 
-				mq->enqueue_prio (mb4);
+				int ret = mq->enqueue_prio (mb4);
 
-				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by consumer!!\n"));
+				ACE_DEBUG((LM_DEBUG, "(%P : %t) producer waken up by consumer!! ret = %d\n", ret));
 
 				++loop;
 			}
@@ -97,7 +97,7 @@ void* consume(void *arg)
 			//以后所存取操作都会返回-1
 			//这个操作会唤醒生产者
 			mq->deactivate();
-
+			ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer...loop 1\n"));
 			++loop;
 		}
 
@@ -107,8 +107,8 @@ void* consume(void *arg)
 
 			//将消息队列的状态设置成ACTIVATED
 			//消息又可以使用了
-			mq->activate();
-
+			/mq->activate();
+			ACE_DEBUG((LM_DEBUG, "(%P : %t) consumer...loop 2\n"));
 			++loop;
 		}
 
