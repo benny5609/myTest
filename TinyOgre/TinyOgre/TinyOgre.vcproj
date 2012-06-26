@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="E:\study\ogre_171\Ogre_sln\bin\debug\$(ProjectName).exe"
+				OutputFile="E:\Study\ogre_171\Ogre_sln\bin\debug\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib\debug&quot;;&quot;$(OGRE_HOME)\boost_1_42\lib&quot;;&quot;$(OGRE_HOME)\..\Dependencies\lib\debug&quot;;&quot;$(OGRE_HOME)\..\Ogre_sln\lib\debug&quot;"
 				GenerateDebugInformation="true"

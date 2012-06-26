@@ -38,6 +38,7 @@ public:
 
 	CbennyTest()
 	{
+		m_bWindowOnly = true;
 	}
 
 DECLARE_OLEMISC_STATUS(OLEMISC_RECOMPOSEONRESIZE |

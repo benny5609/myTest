@@ -46,6 +46,25 @@ TinyOgre::~TinyOgre(void)
     delete mRoot;
 }
  
+WNDPROC g_oldWndProc = NULL;
+
+LRESULT CALLBACK OgreWndProc( HWND hwnd,
+							  UINT uMsg,
+							  WPARAM wParam,
+							  LPARAM lParam
+							  )
+{
+
+	if(uMsg == WM_KEYDOWN )
+	{
+		LogManager::getSingleton().logMessage("WM_KEYDOWN");
+	}
+	printf("msg %d\n", uMsg);
+	
+	//return CallWindowProc(g_oldWndProc,hwnd,uMsg,wParam,lParam);//用这句有问题！！
+	return DefWindowProc(hwnd,uMsg,wParam,lParam);//使用此句没有问题
+}
+
 bool TinyOgre::go(void)
 {
 #ifdef _DEBUG
@@ -103,6 +122,7 @@ bool TinyOgre::go(void)
 	else
 	{
 		mRoot->restoreConfig();
+		mRoot->initialise(false); 
 		RECT rt;
 		GetWindowRect(mParentWnd, &rt);
 		printf("come to createRenderWindow %d,left %d, right %d, bottom %d, top %d\n", int(mParentWnd), rt.left, rt.right,  rt.bottom, rt.top);
@@ -119,6 +139,12 @@ bool TinyOgre::go(void)
 			rt.bottom-rt.top,
 			false,
 			&params);
+
+		size_t windowHnd = 0;
+		mWindow->getCustomAttribute("WINDOW", &windowHnd);
+		g_oldWndProc = (WNDPROC)SetWindowLongPtr((HWND)windowHnd,GWLP_WNDPROC,(LONG_PTR)OgreWndProc);
+		LogManager::getSingleton().logMessage("old wnd is"+Ogre::StringConverter::toString(int(g_oldWndProc)));
+		printf("old wnd is %d\n", int(g_oldWndProc));
 	}
 	
 //-------------------------------------------------------------------------------------
